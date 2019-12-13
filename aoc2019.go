@@ -1,11 +1,15 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	aoc2019 "github.com/gary-lgy/aoc2019/solutions"
 )
+
+type aocSolver func(*os.File)
 
 const usage = "Usage: aoc2019 PUZZLE [INPUT]"
 
@@ -16,14 +20,9 @@ func main() {
 	}
 
 	puzzle := os.Args[1]
-	var solver func(*os.File)
-	switch puzzle {
-	case "1a":
-		solver = aoc2019.Solve1a
-	case "1b":
-		solver = aoc2019.Solve1b
-	default:
-		fmt.Fprintln(os.Stderr, "Not implemented yet.")
+	solver, err := chooseSolver(puzzle)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
 	}
 
@@ -33,7 +32,7 @@ func main() {
 	} else {
 		input = os.Args[2]
 	}
-	filename := "input/" + input
+	filename := filepath.Join("input", input)
 	file, err := os.Open(filename)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error opening input file %q: %v\n", filename, err)
@@ -42,4 +41,19 @@ func main() {
 	defer file.Close()
 
 	solver(file)
+}
+
+func chooseSolver(puzzle string) (aocSolver, error) {
+	switch puzzle {
+	case "1a":
+		return aoc2019.Solve1a, nil
+	case "1b":
+		return aoc2019.Solve1b, nil
+	case "2a":
+		return aoc2019.Solve2a, nil
+	case "2b":
+		return aoc2019.Solve2b, nil
+	default:
+		return nil, errors.New("Not implemented yet.")
+	}
 }
