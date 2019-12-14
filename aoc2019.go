@@ -53,6 +53,10 @@ func chooseSolver(puzzle string) (aocSolver, error) {
 		return aoc2019.Solve2a, nil
 	case "2b":
 		return aoc2019.Solve2b, nil
+	case "3a":
+		return aoc2019.Solve3a, nil
+	case "3b":
+		return aoc2019.Solve3b, nil
 	default:
 		return nil, errors.New("Not implemented yet.")
 	}
