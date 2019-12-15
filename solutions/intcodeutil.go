@@ -27,38 +27,70 @@ type Instruction struct {
 	parameters []Parameter
 }
 
-func (inst *Instruction) Execute(memory []int) bool {
-	if inst.opcode == 99 {
-		return true
-	}
-
+// Execute inst and return whether the program should exit and the new PC, if applicable
+// newPc will be negative when no jump should be performed
+func (inst *Instruction) Execute(memory []int) (exit bool, newPc int) {
 	switch inst.opcode {
 	case 1:
 		op1, op2, dest := inst.parameters[0].Value(memory), inst.parameters[1].Value(memory), inst.parameters[2].value
 		memory[dest] = op1 + op2
+		return false, -1
 	case 2:
 		op1, op2, dest := inst.parameters[0].Value(memory), inst.parameters[1].Value(memory), inst.parameters[2].value
 		memory[dest] = op1 * op2
+		return false, -1
 	case 3:
 		dest := inst.parameters[0].value
 		var input int
 		fmt.Scan(&input)
 		memory[dest] = input
+		return false, -1
 	case 4:
 		fmt.Println(inst.parameters[0].Value(memory))
+		return false, -1
+	case 5:
+		if inst.parameters[0].Value(memory) != 0 {
+			return false, inst.parameters[1].Value(memory)
+		} else {
+			return false, -1
+		}
+	case 6:
+		if inst.parameters[0].Value(memory) == 0 {
+			return false, inst.parameters[1].Value(memory)
+		} else {
+			return false, -1
+		}
+	case 7:
+		op1, op2, dest := inst.parameters[0].Value(memory), inst.parameters[1].Value(memory), inst.parameters[2].value
+		if op1 < op2 {
+			memory[dest] = 1
+		} else {
+			memory[dest] = 0
+		}
+		return false, -1
+	case 8:
+		op1, op2, dest := inst.parameters[0].Value(memory), inst.parameters[1].Value(memory), inst.parameters[2].value
+		if op1 == op2 {
+			memory[dest] = 1
+		} else {
+			memory[dest] = 0
+		}
+		return false, -1
+	case 99:
+		return true, -1
 	default:
 		panic("Unknown opcode " + strconv.Itoa(inst.opcode))
 	}
-
-	return false
 }
 
 func numberOfParameters(opcode int) int {
 	switch opcode {
-	case 1, 2:
+	case 1, 2, 7, 8:
 		return 3
 	case 3, 4:
 		return 1
+	case 5, 6:
+		return 2
 	case 99:
 		return 0
 	default:
@@ -100,9 +132,12 @@ func RunProgram(program []int) int {
 			pc++
 		}
 		instruction := Instruction{opcode, parameters}
-		exit := instruction.Execute(memory)
+		exit, newPc := instruction.Execute(memory)
 		if exit {
 			break
+		}
+		if newPc > 0 {
+			pc = newPc
 		}
 	}
 
