@@ -1,4 +1,4 @@
-package aoc2019
+package aocutil
 
 // ReverseIntSlice reverses an integer slice
 func ReverseIntSlice(slice []int) []int {

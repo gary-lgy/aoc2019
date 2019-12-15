@@ -1,4 +1,4 @@
-package aoc2019
+package aocutil
 
 import (
 	"math"
@@ -6,7 +6,7 @@ import (
 
 // AbsInt returns the absoute value of x
 func AbsInt(x int) int {
-	if (x < 0) {
+	if x < 0 {
 		return -x
 	} else {
 		return x

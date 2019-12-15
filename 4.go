@@ -1,4 +1,4 @@
-package aoc2019
+package main
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	. "github.com/gary-lgy/aoc2019/aocutil"
 )
 
 func readRange(input *os.File) (low, high int) {

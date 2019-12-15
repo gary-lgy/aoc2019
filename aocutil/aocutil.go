@@ -1,4 +1,4 @@
-package aoc2019
+package aocutil
 
 // Check panics if e is not nil
 func Check(e error) {
@@ -8,7 +8,7 @@ func Check(e error) {
 }
 
 // Ensure panics with reason if b is false
-func Ensure(b bool)  {
+func Ensure(b bool) {
 	if !b {
 		panic("Ensure failed")
 	}

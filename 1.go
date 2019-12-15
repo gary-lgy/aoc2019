@@ -1,10 +1,12 @@
-package aoc2019
+package main
 
 import (
 	"bufio"
 	"fmt"
 	"os"
 	"strconv"
+
+	. "github.com/gary-lgy/aoc2019/aocutil"
 )
 
 func Solve1a(input *os.File) {

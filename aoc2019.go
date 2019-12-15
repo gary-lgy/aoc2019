@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-
-	aoc2019 "github.com/gary-lgy/aoc2019/solutions"
 )
 
 type aocSolver func(*os.File)
@@ -46,25 +44,25 @@ func main() {
 func chooseSolver(puzzle string) (aocSolver, error) {
 	switch puzzle {
 	case "1a":
-		return aoc2019.Solve1a, nil
+		return Solve1a, nil
 	case "1b":
-		return aoc2019.Solve1b, nil
+		return Solve1b, nil
 	case "2a":
-		return aoc2019.Solve2a, nil
+		return Solve2a, nil
 	case "2b":
-		return aoc2019.Solve2b, nil
+		return Solve2b, nil
 	case "3a":
-		return aoc2019.Solve3a, nil
+		return Solve3a, nil
 	case "3b":
-		return aoc2019.Solve3b, nil
+		return Solve3b, nil
 	case "4a":
-		return aoc2019.Solve4a, nil
+		return Solve4a, nil
 	case "4b":
-		return aoc2019.Solve4b, nil
+		return Solve4b, nil
 	case "5a":
-		return aoc2019.Solve5a, nil
+		return Solve5a, nil
 	case "5b":
-		return aoc2019.Solve5b, nil
+		return Solve5b, nil
 	default:
 		return nil, errors.New("Not implemented yet.")
 	}

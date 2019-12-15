@@ -1,16 +1,19 @@
-package aoc2019
+package main
 
 import (
 	"fmt"
 	"os"
+
+	. "github.com/gary-lgy/aoc2019/aocutil"
+	. "github.com/gary-lgy/aoc2019/intcode"
 )
 
 func Solve2a(input *os.File) {
-	Ensure(RunProgram([]int{1,9,10,3,2,3,11,0,99,30,40,50}) == 3500)
-	Ensure(RunProgram([]int{1,0,0,0,99}) == 2)
-	Ensure(RunProgram([]int{2,3,0,3,99}) == 2)
-	Ensure(RunProgram([]int{2,4,4,5,99,0}) == 2)
-	Ensure(RunProgram([]int{1,1,1,4,99,5,6,0,99}) == 30)
+	Ensure(RunProgram([]int{1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50}) == 3500)
+	Ensure(RunProgram([]int{1, 0, 0, 0, 99}) == 2)
+	Ensure(RunProgram([]int{2, 3, 0, 3, 99}) == 2)
+	Ensure(RunProgram([]int{2, 4, 4, 5, 99, 0}) == 2)
+	Ensure(RunProgram([]int{1, 1, 1, 4, 99, 5, 6, 0, 99}) == 30)
 
 	numbers := ReadProgram(input)
 	numbers[1], numbers[2] = 12, 2

@@ -1,4 +1,4 @@
-package aoc2019
+package intcode
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	. "github.com/gary-lgy/aoc2019/aocutil"
 )
 
 type Parameter struct {
@@ -143,3 +145,5 @@ func RunProgram(program []int) int {
 
 	return memory[0]
 }
+
+// TODO: virtual IO and tests

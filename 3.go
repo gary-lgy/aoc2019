@@ -1,4 +1,4 @@
-package aoc2019
+package main
 
 import (
 	"fmt"
@@ -7,6 +7,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	. "github.com/gary-lgy/aoc2019/aocutil"
 )
 
 type point IntPair
@@ -104,7 +106,7 @@ func Solve3b(input *os.File) {
 		d2 := 0
 		for _, segment2 := range w2 {
 			if intersection, exists := intersection(segment1, segment2); exists && intersection != (point{0, 0}) {
-				min = MinInt(min, d1 + d2 + intersection.manhattanDistance(&segment1.start) + intersection.manhattanDistance(&segment2.start))
+				min = MinInt(min, d1+d2+intersection.manhattanDistance(&segment1.start)+intersection.manhattanDistance(&segment2.start))
 			}
 			d2 += segment2.length()
 		}
