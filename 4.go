@@ -10,6 +10,11 @@ import (
 	. "github.com/gary-lgy/aoc2019/aocutil"
 )
 
+func init() {
+	solverMap["4a"] = Solve4a
+	solverMap["4b"] = Solve4b
+}
+
 func readRange(input *os.File) (low, high int) {
 	buf, err := ioutil.ReadAll(input)
 	Check(err)

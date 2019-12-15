@@ -7,9 +7,11 @@ import (
 	"path/filepath"
 )
 
+const usage = "Usage: aoc2019 PUZZLE [INPUT]"
+
 type aocSolver func(*os.File)
 
-const usage = "Usage: aoc2019 PUZZLE [INPUT]"
+var solverMap = make(map[string]aocSolver)
 
 func main() {
 	if len(os.Args) < 2 {
@@ -18,9 +20,9 @@ func main() {
 	}
 
 	puzzle := os.Args[1]
-	solver, err := chooseSolver(puzzle)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	solver, found := solverMap[puzzle]
+	if !found {
+		fmt.Fprintln(os.Stderr, errors.New("Not implemented yet."))
 		os.Exit(2)
 	}
 
@@ -39,31 +41,4 @@ func main() {
 	defer file.Close()
 
 	solver(file)
-}
-
-func chooseSolver(puzzle string) (aocSolver, error) {
-	switch puzzle {
-	case "1a":
-		return Solve1a, nil
-	case "1b":
-		return Solve1b, nil
-	case "2a":
-		return Solve2a, nil
-	case "2b":
-		return Solve2b, nil
-	case "3a":
-		return Solve3a, nil
-	case "3b":
-		return Solve3b, nil
-	case "4a":
-		return Solve4a, nil
-	case "4b":
-		return Solve4b, nil
-	case "5a":
-		return Solve5a, nil
-	case "5b":
-		return Solve5b, nil
-	default:
-		return nil, errors.New("Not implemented yet.")
-	}
 }

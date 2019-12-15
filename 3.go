@@ -11,6 +11,11 @@ import (
 	. "github.com/gary-lgy/aoc2019/aocutil"
 )
 
+func init() {
+	solverMap["3a"] = Solve3a
+	solverMap["3b"] = Solve3b
+}
+
 type point IntPair
 
 func (p *point) manhattanDistance(other *point) int {

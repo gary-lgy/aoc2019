@@ -7,6 +7,11 @@ import (
 	"github.com/gary-lgy/aoc2019/intcode"
 )
 
+func init() {
+	solverMap["2a"] = Solve2a
+	solverMap["2b"] = Solve2b
+}
+
 func Solve2a(input *os.File) {
 	vm := intcode.NewVm(intcode.ReadIntCode(input), []int{})
 	vm.SetMemory(1, 12)

@@ -9,6 +9,11 @@ import (
 	. "github.com/gary-lgy/aoc2019/aocutil"
 )
 
+func init() {
+	solverMap["1a"] = Solve1a
+	solverMap["1b"] = Solve1b
+}
+
 func fuelPartA(mass int) int {
 	return mass/3 - 2
 }
