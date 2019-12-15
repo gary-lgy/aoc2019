@@ -8,3 +8,16 @@ func ReverseIntSlice(slice []int) []int {
 	}
 	return s
 }
+
+// IntSliceEqual checks if two integer slices contains the same elements
+func IntSliceEqual(lhs, rhs []int) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i := range lhs {
+		if lhs[i] != rhs[i] {
+			return false
+		}
+	}
+	return true
+}

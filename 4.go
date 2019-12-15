@@ -77,15 +77,9 @@ func Solve4bTheStupidWay(input *os.File) {
 }
 
 func Solve4a(input *os.File) {
-	Ensure(isPossiblePartA(111111))
-	Ensure(!isPossiblePartA(223450))
-	Ensure(!isPossiblePartA(123789))
 	Solve4aTheStupidWay(input)
 }
 
 func Solve4b(input *os.File) {
-	Ensure(isPossiblePartB(112233))
-	Ensure(!isPossiblePartB(123444))
-	Ensure(isPossiblePartB(111122))
 	Solve4bTheStupidWay(input)
 }

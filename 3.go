@@ -62,10 +62,8 @@ func getSegments(wire string) []segment {
 	return segments
 }
 
-func parseWires(input *os.File) ([]segment, []segment) {
-	buf, err := ioutil.ReadAll(input)
-	Check(err)
-	wires := strings.Split(strings.TrimSpace(string(buf)), "\n")
+func parseWires(input string) ([]segment, []segment) {
+	wires := strings.Split(strings.TrimSpace(input), "\n")
 	return getSegments(wires[0]), getSegments(wires[1])
 }
 
@@ -84,8 +82,7 @@ func intersection(s1, s2 segment) (intersection point, exists bool) {
 	return
 }
 
-func Solve3a(input *os.File) {
-	w1, w2 := parseWires(input)
+func shortestManhattanDistance(w1, w2 []segment) int {
 	origin := point{0, 0}
 	min := math.MaxInt32
 	for _, segment1 := range w1 {
@@ -95,11 +92,17 @@ func Solve3a(input *os.File) {
 			}
 		}
 	}
-	fmt.Println(min)
+	return min
 }
 
-func Solve3b(input *os.File) {
-	w1, w2 := parseWires(input)
+func Solve3a(input *os.File) {
+	buf, err := ioutil.ReadAll(input)
+	Check(err)
+	w1, w2 := parseWires(string(buf))
+	fmt.Println(shortestManhattanDistance(w1, w2))
+}
+
+func shortestDelay(w1, w2 []segment) int {
 	min := math.MaxInt32
 	d1 := 0
 	for _, segment1 := range w1 {
@@ -112,5 +115,12 @@ func Solve3b(input *os.File) {
 		}
 		d1 += segment1.length()
 	}
-	fmt.Println(min)
+	return min
+}
+
+func Solve3b(input *os.File) {
+	buf, err := ioutil.ReadAll(input)
+	Check(err)
+	w1, w2 := parseWires(string(buf))
+	fmt.Println(shortestDelay(w1, w2))
 }
