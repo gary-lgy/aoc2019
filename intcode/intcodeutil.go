@@ -10,78 +10,18 @@ import (
 	. "github.com/gary-lgy/aoc2019/aocutil"
 )
 
-type Parameter struct {
+type parameter struct {
 	mode, value int
 }
 
-func (param *Parameter) Value(memory []int) int {
-	if param.mode == 0 {
+func (param *parameter) getValue(memory []int) int {
+	switch param.mode {
+	case 0:
 		return memory[param.value]
-	} else if param.mode == 1 {
-		return param.value
-	} else {
-		panic("Unknown parameter mode")
-	}
-}
-
-type Instruction struct {
-	opcode     int
-	parameters []Parameter
-}
-
-// Execute inst and return whether the program should exit and the new PC, if applicable
-// newPc will be negative when no jump should be performed
-func (inst *Instruction) Execute(memory []int) (exit bool, newPc int) {
-	switch inst.opcode {
 	case 1:
-		op1, op2, dest := inst.parameters[0].Value(memory), inst.parameters[1].Value(memory), inst.parameters[2].value
-		memory[dest] = op1 + op2
-		return false, -1
-	case 2:
-		op1, op2, dest := inst.parameters[0].Value(memory), inst.parameters[1].Value(memory), inst.parameters[2].value
-		memory[dest] = op1 * op2
-		return false, -1
-	case 3:
-		dest := inst.parameters[0].value
-		var input int
-		fmt.Scan(&input)
-		memory[dest] = input
-		return false, -1
-	case 4:
-		fmt.Println(inst.parameters[0].Value(memory))
-		return false, -1
-	case 5:
-		if inst.parameters[0].Value(memory) != 0 {
-			return false, inst.parameters[1].Value(memory)
-		} else {
-			return false, -1
-		}
-	case 6:
-		if inst.parameters[0].Value(memory) == 0 {
-			return false, inst.parameters[1].Value(memory)
-		} else {
-			return false, -1
-		}
-	case 7:
-		op1, op2, dest := inst.parameters[0].Value(memory), inst.parameters[1].Value(memory), inst.parameters[2].value
-		if op1 < op2 {
-			memory[dest] = 1
-		} else {
-			memory[dest] = 0
-		}
-		return false, -1
-	case 8:
-		op1, op2, dest := inst.parameters[0].Value(memory), inst.parameters[1].Value(memory), inst.parameters[2].value
-		if op1 == op2 {
-			memory[dest] = 1
-		} else {
-			memory[dest] = 0
-		}
-		return false, -1
-	case 99:
-		return true, -1
+		return param.value
 	default:
-		panic("Unknown opcode " + strconv.Itoa(inst.opcode))
+		panic("Unknown parameter mode")
 	}
 }
 
@@ -100,6 +40,66 @@ func numberOfParameters(opcode int) int {
 	}
 }
 
+type instruction struct {
+	opcode     int
+	parameters []parameter
+}
+
+// execute inst and return whether the program should exit and the new PC, if applicable
+// newPc will be negative when no jump should be performed
+func (inst *instruction) execute(vm *Vm) (exit bool, newPc int) {
+	switch inst.opcode {
+	case 1:
+		op1, op2, dest := inst.parameters[0].getValue(vm.memory), inst.parameters[1].getValue(vm.memory), inst.parameters[2].value
+		vm.memory[dest] = op1 + op2
+		return false, -1
+	case 2:
+		op1, op2, dest := inst.parameters[0].getValue(vm.memory), inst.parameters[1].getValue(vm.memory), inst.parameters[2].value
+		vm.memory[dest] = op1 * op2
+		return false, -1
+	case 3:
+		dest := inst.parameters[0].value
+		vm.memory[dest] = vm.getInput()
+		return false, -1
+	case 4:
+		out := inst.parameters[0].getValue(vm.memory)
+		vm.pushOutput(out)
+		return false, -1
+	case 5:
+		if inst.parameters[0].getValue(vm.memory) != 0 {
+			return false, inst.parameters[1].getValue(vm.memory)
+		} else {
+			return false, -1
+		}
+	case 6:
+		if inst.parameters[0].getValue(vm.memory) == 0 {
+			return false, inst.parameters[1].getValue(vm.memory)
+		} else {
+			return false, -1
+		}
+	case 7:
+		op1, op2, dest := inst.parameters[0].getValue(vm.memory), inst.parameters[1].getValue(vm.memory), inst.parameters[2].value
+		if op1 < op2 {
+			vm.memory[dest] = 1
+		} else {
+			vm.memory[dest] = 0
+		}
+		return false, -1
+	case 8:
+		op1, op2, dest := inst.parameters[0].getValue(vm.memory), inst.parameters[1].getValue(vm.memory), inst.parameters[2].value
+		if op1 == op2 {
+			vm.memory[dest] = 1
+		} else {
+			vm.memory[dest] = 0
+		}
+		return false, -1
+	case 99:
+		return true, -1
+	default:
+		panic("Unknown opcode " + strconv.Itoa(inst.opcode))
+	}
+}
+
 func readOpcode(token int) (opcode int, modes []int) {
 	opcode, token = token%100, token/100
 	modes = make([]int, numberOfParameters(opcode))
@@ -109,41 +109,68 @@ func readOpcode(token int) (opcode int, modes []int) {
 	return
 }
 
-func ReadProgram(input *os.File) (program []int) {
+type Vm struct {
+	memory        []int
+	input, output []int
+	pc            int
+}
+
+func ReadIntCode(input *os.File) (intcode []int) {
 	buf, err := ioutil.ReadAll(input)
 	Check(err)
 	tokens := strings.Split(strings.TrimSpace(string(buf)), ",")
-	for _, token := range tokens {
+	intcode = make([]int, len(tokens))
+	for i, token := range tokens {
 		number, err := strconv.ParseInt(token, 10, 32)
 		Check(err)
-		program = append(program, int(number))
+		intcode[i] = int(number)
 	}
 	return
 }
 
-func RunProgram(program []int) int {
-	memory := make([]int, len(program))
-	copy(memory, program)
-	pc := 0
-	for pc < len(memory) {
-		opcode, modes := readOpcode(memory[pc])
-		pc++
-		var parameters []Parameter
+func NewVm(intcodes, input []int) Vm {
+	memory := make([]int, len(intcodes))
+	copy(memory, intcodes)
+	return Vm{memory: memory, input: input, output: []int{}, pc: 0}
+}
+
+func (vm *Vm) getInput() int {
+	i := vm.input[0]
+	vm.input = vm.input[1:]
+	return i
+}
+
+func (vm *Vm) pushOutput(output int) {
+	fmt.Println("Output from vm:", output)
+	vm.output = append(vm.output, output)
+}
+
+func (vm *Vm) GetOutput() []int {
+	return vm.output
+}
+
+func (vm *Vm) SetMemory(index, value int) {
+	vm.memory[index] = value
+}
+
+func (vm *Vm) Run() int {
+	for vm.pc < len(vm.memory) {
+		opcode, modes := readOpcode(vm.memory[vm.pc])
+		vm.pc += 1
+		var parameters []parameter
 		for _, mode := range modes {
-			parameters = append(parameters, Parameter{mode, memory[pc]})
-			pc++
+			parameters = append(parameters, parameter{mode, vm.memory[vm.pc]})
+			vm.pc += 1
 		}
-		instruction := Instruction{opcode, parameters}
-		exit, newPc := instruction.Execute(memory)
+		inst := instruction{opcode, parameters}
+		exit, newPc := inst.execute(vm)
 		if exit {
 			break
 		}
 		if newPc > 0 {
-			pc = newPc
+			vm.pc = newPc
 		}
 	}
 
-	return memory[0]
+	return vm.memory[0]
 }
-
-// TODO: virtual IO and tests

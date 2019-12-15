@@ -4,30 +4,26 @@ import (
 	"fmt"
 	"os"
 
-	. "github.com/gary-lgy/aoc2019/aocutil"
-	. "github.com/gary-lgy/aoc2019/intcode"
+	"github.com/gary-lgy/aoc2019/intcode"
 )
 
 func Solve2a(input *os.File) {
-	Ensure(RunProgram([]int{1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50}) == 3500)
-	Ensure(RunProgram([]int{1, 0, 0, 0, 99}) == 2)
-	Ensure(RunProgram([]int{2, 3, 0, 3, 99}) == 2)
-	Ensure(RunProgram([]int{2, 4, 4, 5, 99, 0}) == 2)
-	Ensure(RunProgram([]int{1, 1, 1, 4, 99, 5, 6, 0, 99}) == 30)
-
-	numbers := ReadProgram(input)
-	numbers[1], numbers[2] = 12, 2
-	fmt.Println(RunProgram(numbers))
+	vm := intcode.NewVm(intcode.ReadIntCode(input), []int{})
+	vm.SetMemory(1, 12)
+	vm.SetMemory(2, 2)
+	fmt.Println(vm.Run())
 }
 
 func Solve2b(input *os.File) {
-	numbers := ReadProgram(input)
+	program := intcode.ReadIntCode(input)
 	target := 19690720
 
 	for i := 0; i <= 99; i++ {
 		for j := 0; j <= 99; j++ {
-			numbers[1], numbers[2] = i, j
-			if RunProgram(numbers) == target {
+			vm := intcode.NewVm(program, []int{})
+			vm.SetMemory(1, i)
+			vm.SetMemory(2, j)
+			if vm.Run() == target {
 				fmt.Println(100*i + j)
 				return
 			}
