@@ -8,18 +8,18 @@ import (
 	"strconv"
 	"strings"
 
-	. "github.com/gary-lgy/aoc2019/aocutil"
+	"github.com/gary-lgy/aoc2019/aocutil"
 )
 
 func init() {
-	solverMap["3a"] = Solve3a
-	solverMap["3b"] = Solve3b
+	solverMap["3a"] = solve3a
+	solverMap["3b"] = solve3b
 }
 
-type point IntPair
+type point aocutil.IntPair
 
 func (p *point) manhattanDistance(other *point) int {
-	return AbsInt(other.X-p.X) + AbsInt(other.Y-p.Y)
+	return aocutil.AbsInt(other.X-p.X) + aocutil.AbsInt(other.Y-p.Y)
 }
 
 type segment struct {
@@ -33,10 +33,10 @@ func (s *segment) length() int {
 
 func newSegment(start, end point) segment {
 	s := segment{start: start, end: end}
-	s.xMin = MinInt(start.X, end.X)
-	s.xMax = MaxInt(start.X, end.X)
-	s.yMin = MinInt(start.Y, end.Y)
-	s.yMax = MaxInt(start.Y, end.Y)
+	s.xMin = aocutil.MinInt(start.X, end.X)
+	s.xMax = aocutil.MaxInt(start.X, end.X)
+	s.yMin = aocutil.MinInt(start.Y, end.Y)
+	s.yMax = aocutil.MaxInt(start.Y, end.Y)
 	return s
 }
 
@@ -48,7 +48,7 @@ func getSegments(wire string) []segment {
 	for _, desc := range descriptors {
 		direction := desc[0]
 		steps, err := strconv.ParseInt(desc[1:], 10, 32)
-		Check(err)
+		aocutil.Check(err)
 		switch direction {
 		case 'U':
 			end = point{start.X, start.Y + int(steps)}
@@ -93,16 +93,16 @@ func shortestManhattanDistance(w1, w2 []segment) int {
 	for _, segment1 := range w1 {
 		for _, segment2 := range w2 {
 			if intersection, exists := intersection(segment1, segment2); exists && intersection != (point{0, 0}) {
-				min = MinInt(min, origin.manhattanDistance(&intersection))
+				min = aocutil.MinInt(min, origin.manhattanDistance(&intersection))
 			}
 		}
 	}
 	return min
 }
 
-func Solve3a(input *os.File) {
+func solve3a(input *os.File) {
 	buf, err := ioutil.ReadAll(input)
-	Check(err)
+	aocutil.Check(err)
 	w1, w2 := parseWires(string(buf))
 	fmt.Println(shortestManhattanDistance(w1, w2))
 }
@@ -114,7 +114,7 @@ func shortestDelay(w1, w2 []segment) int {
 		d2 := 0
 		for _, segment2 := range w2 {
 			if intersection, exists := intersection(segment1, segment2); exists && intersection != (point{0, 0}) {
-				min = MinInt(min, d1+d2+intersection.manhattanDistance(&segment1.start)+intersection.manhattanDistance(&segment2.start))
+				min = aocutil.MinInt(min, d1+d2+intersection.manhattanDistance(&segment1.start)+intersection.manhattanDistance(&segment2.start))
 			}
 			d2 += segment2.length()
 		}
@@ -123,9 +123,9 @@ func shortestDelay(w1, w2 []segment) int {
 	return min
 }
 
-func Solve3b(input *os.File) {
+func solve3b(input *os.File) {
 	buf, err := ioutil.ReadAll(input)
-	Check(err)
+	aocutil.Check(err)
 	w1, w2 := parseWires(string(buf))
 	fmt.Println(shortestDelay(w1, w2))
 }

@@ -22,6 +22,7 @@ U98,R91,D20,R16,D67,R40,U7,R15,U6,R7`, 135},
 	}
 	input, err := os.Open(filepath.Join("input", "3a"))
 	aocutil.Check(err)
+	defer input.Close()
 	data, err := ioutil.ReadAll(input)
 	aocutil.Check(err)
 	tc = append(tc, wireTc{string(data), 1084})
@@ -43,6 +44,7 @@ U98,R91,D20,R16,D67,R40,U7,R15,U6,R7`, 410},
 	}
 	input, err := os.Open(filepath.Join("input", "3a"))
 	aocutil.Check(err)
+	defer input.Close()
 	data, err := ioutil.ReadAll(input)
 	aocutil.Check(err)
 	tc = append(tc, wireTc{string(data), 9240})

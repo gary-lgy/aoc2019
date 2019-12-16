@@ -14,6 +14,6 @@ func TestVm5a(t *testing.T) {
 	input, err := os.Open(filepath.Join("input", "5a"))
 	defer input.Close()
 	aocutil.Check(err)
-	tc := VmTc{intcode.ReadIntCode(input), []int{1}, 3, []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 4601506}}
-	IntcodeVmTest(t, []VmTc{tc})
+	tc := VMTC{intcode.ReadIntCode(input), []int{1}, 3, []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 4601506}}
+	IntcodeVMTest(t, []VMTC{tc})
 }

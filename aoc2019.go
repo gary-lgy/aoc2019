@@ -22,7 +22,7 @@ func main() {
 	puzzle := os.Args[1]
 	solver, found := solverMap[puzzle]
 	if !found {
-		fmt.Fprintln(os.Stderr, errors.New("Not implemented yet."))
+		fmt.Fprintln(os.Stderr, errors.New("not implemented yet"))
 		os.Exit(2)
 	}
 

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	. "github.com/gary-lgy/aoc2019/aocutil"
+	"github.com/gary-lgy/aoc2019/aocutil"
 )
 
 type parameter struct {
@@ -47,7 +47,7 @@ type instruction struct {
 
 // execute inst and return whether the program should exit and the new PC, if applicable
 // newPc will be negative when no jump should be performed
-func (inst *instruction) execute(vm *Vm) (exit bool, newPc int) {
+func (inst *instruction) execute(vm *VM) (exit bool, newPc int) {
 	switch inst.opcode {
 	case 1:
 		op1, op2, dest := inst.parameters[0].getValue(vm.memory), inst.parameters[1].getValue(vm.memory), inst.parameters[2].value
@@ -68,15 +68,13 @@ func (inst *instruction) execute(vm *Vm) (exit bool, newPc int) {
 	case 5:
 		if inst.parameters[0].getValue(vm.memory) != 0 {
 			return false, inst.parameters[1].getValue(vm.memory)
-		} else {
-			return false, -1
 		}
+		return false, -1
 	case 6:
 		if inst.parameters[0].getValue(vm.memory) == 0 {
 			return false, inst.parameters[1].getValue(vm.memory)
-		} else {
-			return false, -1
 		}
+		return false, -1
 	case 7:
 		op1, op2, dest := inst.parameters[0].getValue(vm.memory), inst.parameters[1].getValue(vm.memory), inst.parameters[2].value
 		if op1 < op2 {
@@ -103,64 +101,70 @@ func (inst *instruction) execute(vm *Vm) (exit bool, newPc int) {
 func readOpcode(token int) (opcode int, modes []int) {
 	opcode, token = token%100, token/100
 	modes = make([]int, numberOfParameters(opcode))
-	for i, _ := range modes {
+	for i := range modes {
 		modes[i], token = token%10, token/10
 	}
 	return
 }
 
-type Vm struct {
+// VM represents an intcode machine
+type VM struct {
 	memory        []int
 	input, output []int
 	pc            int
 }
 
+// ReadIntCode takes in a pointer to os.File and read its content as an intcode program
 func ReadIntCode(input *os.File) (intcode []int) {
 	buf, err := ioutil.ReadAll(input)
-	Check(err)
+	aocutil.Check(err)
 	tokens := strings.Split(strings.TrimSpace(string(buf)), ",")
 	intcode = make([]int, len(tokens))
 	for i, token := range tokens {
 		number, err := strconv.ParseInt(token, 10, 32)
-		Check(err)
+		aocutil.Check(err)
 		intcode[i] = int(number)
 	}
 	return
 }
 
-func NewVm(intcodes, input []int) Vm {
+// NewVM constructs a new Intcode VM
+func NewVM(intcodes, input []int) VM {
 	memory := make([]int, len(intcodes))
 	copy(memory, intcodes)
-	return Vm{memory: memory, input: input, output: []int{}, pc: 0}
+	return VM{memory: memory, input: input, output: []int{}, pc: 0}
 }
 
-func (vm *Vm) getInput() int {
+func (vm *VM) getInput() int {
 	i := vm.input[0]
 	vm.input = vm.input[1:]
 	return i
 }
 
-func (vm *Vm) pushOutput(output int) {
+func (vm *VM) pushOutput(output int) {
 	fmt.Println("Output from vm:", output)
 	vm.output = append(vm.output, output)
 }
 
-func (vm *Vm) GetOutput() []int {
+// GetOutput gets the output from vm
+func (vm *VM) GetOutput() []int {
 	return vm.output
 }
 
-func (vm *Vm) SetMemory(index, value int) {
+// SetMemory sets the memory of vm at index to value
+func (vm *VM) SetMemory(index, value int) {
 	vm.memory[index] = value
 }
 
-func (vm *Vm) Run() int {
+// Run vm
+func (vm *VM) Run() int {
 	for vm.pc < len(vm.memory) {
 		opcode, modes := readOpcode(vm.memory[vm.pc])
-		vm.pc += 1
+		vm.pc++
 		var parameters []parameter
 		for _, mode := range modes {
 			parameters = append(parameters, parameter{mode, vm.memory[vm.pc]})
-			vm.pc += 1
+			vm.pc++
 		}
 		inst := instruction{opcode, parameters}
 		exit, newPc := inst.execute(vm)

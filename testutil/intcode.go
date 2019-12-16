@@ -7,9 +7,10 @@ import (
 	"github.com/gary-lgy/aoc2019/intcode"
 )
 
-func IntcodeVmTest(t *testing.T, tc []VmTc) {
+// IntcodeVMTest tests VM with testcases tc
+func IntcodeVMTest(t *testing.T, tc []VMTC) {
 	for _, c := range tc {
-		vm := intcode.NewVm(c.Program, c.Input)
+		vm := intcode.NewVM(c.Program, c.Input)
 		ret := vm.Run()
 		output := vm.GetOutput()
 		if ret != c.ExpectedReturnValue {

@@ -11,7 +11,7 @@ import (
 )
 
 func TestVmReturnValue(t *testing.T) {
-	tc := []VmTc{
+	tc := []VMTC{
 		{[]int{1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50}, []int{}, 3500, []int{}},
 		{[]int{1, 0, 0, 0, 99}, []int{}, 2, []int{}},
 		{[]int{2, 3, 0, 3, 99}, []int{}, 2, []int{}},
@@ -26,7 +26,7 @@ func TestVmReturnValue(t *testing.T) {
 	copy(c2, c1)
 	c1[1], c1[2] = 12, 2
 	c2[1], c2[2] = 80, 18
-	tc = append(tc, VmTc{c1, []int{}, 3166704, []int{}}, VmTc{c2, []int{}, 19690720, []int{}})
+	tc = append(tc, VMTC{c1, []int{}, 3166704, []int{}}, VMTC{c2, []int{}, 19690720, []int{}})
 
-	IntcodeVmTest(t, tc)
+	IntcodeVMTest(t, tc)
 }

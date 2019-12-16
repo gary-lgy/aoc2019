@@ -8,16 +8,16 @@ import (
 )
 
 func init() {
-	solverMap["5a"] = Solve5a
-	solverMap["5b"] = Solve5b
+	solverMap["5a"] = solve5a
+	solverMap["5b"] = solve5b
 }
 
-func Solve5a(input *os.File) {
-	vm := intcode.NewVm(intcode.ReadIntCode(input), []int{1})
+func solve5a(input *os.File) {
+	vm := intcode.NewVM(intcode.ReadIntCode(input), []int{1})
 	fmt.Println(vm.Run())
 }
 
-func Solve5b(input *os.File) {
-	vm := intcode.NewVm(intcode.ReadIntCode(input), []int{5})
+func solve5b(input *os.File) {
+	vm := intcode.NewVM(intcode.ReadIntCode(input), []int{5})
 	fmt.Println(vm.Run())
 }

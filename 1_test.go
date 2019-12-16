@@ -7,7 +7,7 @@ import (
 )
 
 func TestFuelPartA(t *testing.T) {
-	testCases := []IntTc{
+	testCases := []IntTC{
 		{12, 2},
 		{14, 2},
 		{1969, 654},
@@ -22,7 +22,7 @@ func TestFuelPartA(t *testing.T) {
 }
 
 func TestFuelPartB(t *testing.T) {
-	testCases := []IntTc{
+	testCases := []IntTC{
 		{14, 2},
 		{1969, 966},
 		{100756, 50346},
