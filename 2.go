@@ -13,10 +13,15 @@ func init() {
 }
 
 func solve2a(input *os.File) {
-	vm := intcode.NewVM(intcode.ReadIntCode(input), []int{})
+	ic, oc := make(chan int), make(chan int)
+	vm := intcode.NewVM(intcode.ReadIntCode(input), ic, oc)
 	vm.SetMemory(1, 12)
 	vm.SetMemory(2, 2)
-	fmt.Println(vm.Run())
+	go vm.Run()
+	for o := range oc {
+		intcode.LogOutput(o)
+	}
+	fmt.Println(vm.ExitCode())
 }
 
 func solve2b(input *os.File) {
@@ -25,10 +30,15 @@ func solve2b(input *os.File) {
 
 	for i := 0; i <= 99; i++ {
 		for j := 0; j <= 99; j++ {
-			vm := intcode.NewVM(program, []int{})
+			ic, oc := make(chan int), make(chan int)
+			vm := intcode.NewVM(program, ic, oc)
 			vm.SetMemory(1, i)
 			vm.SetMemory(2, j)
-			if vm.Run() == target {
+			go vm.Run()
+			for o := range oc {
+				intcode.LogOutput(o)
+			}
+			if vm.ExitCode() == target {
 				fmt.Println(100*i + j)
 				return
 			}

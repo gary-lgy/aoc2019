@@ -19,14 +19,16 @@ func TestVmReturnValue(t *testing.T) {
 		{[]int{1, 1, 1, 4, 99, 5, 6, 0, 99}, []int{}, 30, []int{}},
 	}
 	input, err := os.Open(filepath.Join("input", "2"))
-	defer input.Close()
 	aocutil.Check(err)
+	defer input.Close()
 	c1 := intcode.ReadIntCode(input)
 	c2 := make([]int, len(c1))
 	copy(c2, c1)
 	c1[1], c1[2] = 12, 2
 	c2[1], c2[2] = 80, 18
-	tc = append(tc, VMTC{c1, []int{}, 3166704, []int{}}, VMTC{c2, []int{}, 19690720, []int{}})
+	tc = append(tc,
+		VMTC{Program: c1, Input: []int{}, ExpectedReturnValue: 3166704, ExpectedOutput: []int{}},
+		VMTC{Program: c2, Input: []int{}, ExpectedReturnValue: 19690720, ExpectedOutput: []int{}})
 
 	IntcodeVMTest(t, tc)
 }

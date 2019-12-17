@@ -21,7 +21,7 @@ func fuelPartA(mass int) int {
 func solve1a(input *os.File) {
 	scanner := bufio.NewScanner(input)
 
-	var sum int = 0
+	var sum = 0
 	for scanner.Scan() {
 		mass, err := strconv.ParseInt(scanner.Text(), 10, 32)
 		aocutil.Check(err)

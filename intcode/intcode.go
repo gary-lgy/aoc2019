@@ -1,11 +1,11 @@
 package intcode
 
 import (
-	"fmt"
+	"io"
 	"io/ioutil"
-	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/gary-lgy/aoc2019/aocutil"
 )
@@ -92,6 +92,7 @@ func (inst *instruction) execute(vm *VM) (exit bool, newPc int) {
 		}
 		return false, -1
 	case 99:
+		close(vm.output)
 		return true, -1
 	default:
 		panic("Unknown opcode " + strconv.Itoa(inst.opcode))
@@ -109,13 +110,15 @@ func readOpcode(token int) (opcode int, modes []int) {
 
 // VM represents an intcode machine
 type VM struct {
-	memory        []int
-	input, output []int
-	pc            int
+	pc       int
+	memory   []int
+	input    <-chan int
+	output   chan<- int
+	exitCode int
 }
 
-// ReadIntCode takes in a pointer to os.File and read its content as an intcode program
-func ReadIntCode(input *os.File) (intcode []int) {
+// ReadIntCode takes in an io.Reader and returns its content as an intcode program
+func ReadIntCode(input io.Reader) (intcode []int) {
 	buf, err := ioutil.ReadAll(input)
 	aocutil.Check(err)
 	tokens := strings.Split(strings.TrimSpace(string(buf)), ",")
@@ -129,26 +132,18 @@ func ReadIntCode(input *os.File) (intcode []int) {
 }
 
 // NewVM constructs a new Intcode VM
-func NewVM(intcodes, input []int) VM {
+func NewVM(intcodes []int, input <-chan int, output chan<- int) VM {
 	memory := make([]int, len(intcodes))
 	copy(memory, intcodes)
-	return VM{memory: memory, input: input, output: []int{}, pc: 0}
+	return VM{memory: memory, input: input, output: output, pc: 0, exitCode: 0}
 }
 
 func (vm *VM) getInput() int {
-	i := vm.input[0]
-	vm.input = vm.input[1:]
-	return i
+	return <-vm.input
 }
 
 func (vm *VM) pushOutput(output int) {
-	fmt.Println("Output from vm:", output)
-	vm.output = append(vm.output, output)
-}
-
-// GetOutput gets the output from vm
-func (vm *VM) GetOutput() []int {
-	return vm.output
+	vm.output <- output
 }
 
 // SetMemory sets the memory of vm at index to value
@@ -157,7 +152,7 @@ func (vm *VM) SetMemory(index, value int) {
 }
 
 // Run vm
-func (vm *VM) Run() int {
+func (vm *VM) Run() {
 	for vm.pc < len(vm.memory) {
 		opcode, modes := readOpcode(vm.memory[vm.pc])
 		vm.pc++
@@ -175,6 +170,16 @@ func (vm *VM) Run() int {
 			vm.pc = newPc
 		}
 	}
+	vm.exitCode = vm.memory[0]
+}
 
-	return vm.memory[0]
+// Run vm and decrement wg count after it is done
+func (vm *VM) RunWithWG(wg *sync.WaitGroup) {
+	vm.Run()
+	wg.Done()
+}
+
+// Get the exit code of the VM
+func (vm *VM) ExitCode() int {
+	return vm.exitCode
 }

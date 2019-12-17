@@ -43,7 +43,7 @@ func newSegment(start, end point) segment {
 func getSegments(wire string) []segment {
 	var segments []segment
 	descriptors := strings.Split(wire, ",")
-	start := point{0, 0}
+	start := point{X: 0, Y: 0}
 	var end point
 	for _, desc := range descriptors {
 		direction := desc[0]
@@ -51,13 +51,13 @@ func getSegments(wire string) []segment {
 		aocutil.Check(err)
 		switch direction {
 		case 'U':
-			end = point{start.X, start.Y + int(steps)}
+			end = point{X: start.X, Y: start.Y + int(steps)}
 		case 'D':
-			end = point{start.X, start.Y - int(steps)}
+			end = point{X: start.X, Y: start.Y - int(steps)}
 		case 'L':
-			end = point{start.X - int(steps), start.Y}
+			end = point{X: start.X - int(steps), Y: start.Y}
 		case 'R':
-			end = point{start.X + int(steps), start.Y}
+			end = point{X: start.X + int(steps), Y: start.Y}
 		default:
 			panic("Unknown direction " + string(direction))
 		}
@@ -75,24 +75,24 @@ func parseWires(input string) ([]segment, []segment) {
 func intersection(s1, s2 segment) (intersection point, exists bool) {
 	switch {
 	case s1.xMin <= s2.xMin && s2.xMax <= s1.xMax && s2.yMin <= s1.yMin && s1.yMax <= s2.yMax:
-		intersection = point{s2.xMin, s1.yMin}
+		intersection = point{X: s2.xMin, Y: s1.yMin}
 		exists = true
 	case s2.xMin <= s1.xMin && s1.xMax <= s2.xMax && s1.yMin <= s2.yMin && s2.yMax <= s1.yMax:
-		intersection = point{s1.xMin, s2.yMin}
+		intersection = point{X: s1.xMin, Y: s2.yMin}
 		exists = true
 	default:
-		intersection = point{0, 0} // Dummy point
+		intersection = point{X: 0, Y: 0} // Dummy point
 		exists = false
 	}
 	return
 }
 
 func shortestManhattanDistance(w1, w2 []segment) int {
-	origin := point{0, 0}
+	origin := point{X: 0, Y: 0}
 	min := math.MaxInt32
 	for _, segment1 := range w1 {
 		for _, segment2 := range w2 {
-			if intersection, exists := intersection(segment1, segment2); exists && intersection != (point{0, 0}) {
+			if intersection, exists := intersection(segment1, segment2); exists && intersection != (point{X: 0, Y: 0}) {
 				min = aocutil.MinInt(min, origin.manhattanDistance(&intersection))
 			}
 		}
@@ -113,7 +113,7 @@ func shortestDelay(w1, w2 []segment) int {
 	for _, segment1 := range w1 {
 		d2 := 0
 		for _, segment2 := range w2 {
-			if intersection, exists := intersection(segment1, segment2); exists && intersection != (point{0, 0}) {
+			if intersection, exists := intersection(segment1, segment2); exists && intersection != (point{X: 0, Y: 0}) {
 				min = aocutil.MinInt(min, d1+d2+intersection.manhattanDistance(&segment1.start)+intersection.manhattanDistance(&segment2.start))
 			}
 			d2 += segment2.length()

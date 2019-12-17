@@ -21,7 +21,6 @@ func TestIsPossiblePasswordA(t *testing.T) {
 	}
 }
 
-
 func TestIsPossiblePasswordB(t *testing.T) {
 	tc := []passwordTc{
 		{112233, true},

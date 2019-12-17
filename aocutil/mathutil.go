@@ -4,7 +4,7 @@ import (
 	"math"
 )
 
-// AbsInt returns the absoute value of x
+// AbsInt returns the absolute value of x
 func AbsInt(x int) int {
 	if x < 0 {
 		return -x

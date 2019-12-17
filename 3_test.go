@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
 	"github.com/gary-lgy/aoc2019/aocutil"
 )
 
