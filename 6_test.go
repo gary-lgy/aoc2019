@@ -22,7 +22,7 @@ func Test6a(t *testing.T) {
 	orbits := readOrbits(strings.NewReader(example))
 	test6a(t, &orbits, 42)
 
-	input, err := os.Open(filepath.Join("input", "6a"))
+	input, err := os.Open(filepath.Join("input", "6"))
 	aocutil.Check(err)
 	defer input.Close()
 	orbits = readOrbits(input)
@@ -42,7 +42,7 @@ func Test6b(t *testing.T) {
 
 	test6b(t, strings.NewReader(example), 4)
 
-	input, err := os.Open(filepath.Join("input", "6a"))
+	input, err := os.Open(filepath.Join("input", "6"))
 	aocutil.Check(err)
 	defer input.Close()
 	test6b(t, input, 229)
