@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"io"
 	"math"
-	"os"
 	"sync"
 
 	"github.com/gary-lgy/aoc2019/intcode"
 )
 
 func init() {
-	solverMap["7a"] = solve7a
-	solverMap["7b"] = solve7b
+	solvers["7a"] = solve7a
+	solvers["7b"] = solve7b
 }
 
 func permutationsHelper(numbers, current []int, results [][]int, available []bool) [][]int {
@@ -70,8 +69,11 @@ func chainedAmplifiersOutput(program []int, phases []int) int {
 	return <-channels[0]
 }
 
-func maxAmplifiersOutput(input io.Reader, phases []int, outputFunc func([]int, []int) int) int {
-	program := intcode.ReadIntCode(input)
+func maxAmplifiersOutput(input io.Reader, phases []int, outputFunc func([]int, []int) int) (int, error) {
+	program, err := intcode.ReadIntCode(input)
+	if err != nil {
+		return 0, err
+	}
 	permutations := permutations(phases)
 	max := math.MinInt32
 	for _, perm := range permutations {
@@ -79,13 +81,21 @@ func maxAmplifiersOutput(input io.Reader, phases []int, outputFunc func([]int, [
 			max = output
 		}
 	}
-	return max
+	return max, nil
 }
 
-func solve7a(input *os.File) {
-	fmt.Println(maxAmplifiersOutput(input, []int{0, 1, 2, 3, 4}, amplifiersOutput))
+func solve7a(input io.Reader) (string, error) {
+	answer, err := maxAmplifiersOutput(input, []int{0, 1, 2, 3, 4}, amplifiersOutput)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprint(answer), nil
 }
 
-func solve7b(input *os.File) {
-	fmt.Println(maxAmplifiersOutput(input, []int{5, 6, 7, 8, 9}, chainedAmplifiersOutput))
+func solve7b(input io.Reader) (string, error) {
+	answer, err := maxAmplifiersOutput(input, []int{5, 6, 7, 8, 9}, chainedAmplifiersOutput)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprint(answer), nil
 }

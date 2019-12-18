@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	. "github.com/gary-lgy/aoc2019/testutil"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFuelPartA(t *testing.T) {
@@ -14,10 +16,7 @@ func TestFuelPartA(t *testing.T) {
 		{100756, 33583},
 	}
 	for _, c := range testCases {
-		actual := fuelPartA(c.Input)
-		if c.Expected != actual {
-			t.Errorf("fuelPartA(%d): expected %d, got %d", c.Input, c.Expected, actual)
-		}
+		assert.Equal(t, c.Expected, fuelPartA(c.Input))
 	}
 }
 
@@ -28,9 +27,6 @@ func TestFuelPartB(t *testing.T) {
 		{100756, 50346},
 	}
 	for _, c := range testCases {
-		actual := fuelPartB(c.Input)
-		if c.Expected != actual {
-			t.Errorf("fuelPartA(%d): expected %d, got %d", c.Input, c.Expected, actual)
-		}
+		assert.Equal(t, c.Expected, fuelPartB(c.Input))
 	}
 }

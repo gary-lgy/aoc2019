@@ -12,11 +12,14 @@ func Reverse(str string) string {
 }
 
 // Digits converts each character in digits into a digit represented as an int
-func Digits(str string) (digits []int) {
+func Digits(str string) ([]int, error) {
+	var digits []int
 	for _, ch := range str {
 		digit, err := strconv.ParseInt(string(ch), 10, 32)
-		Check(err)
+		if err != nil {
+			return nil, err
+		}
 		digits = append(digits, int(digit))
 	}
-	return
+	return digits, nil
 }

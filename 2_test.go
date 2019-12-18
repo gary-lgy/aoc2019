@@ -5,7 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/gary-lgy/aoc2019/aocutil"
+	"github.com/stretchr/testify/require"
+
 	"github.com/gary-lgy/aoc2019/intcode"
 	. "github.com/gary-lgy/aoc2019/testutil"
 )
@@ -19,9 +20,10 @@ func TestVmReturnValue(t *testing.T) {
 		{[]int{1, 1, 1, 4, 99, 5, 6, 0, 99}, []int{}, 30, []int{}},
 	}
 	input, err := os.Open(filepath.Join("input", "2"))
-	aocutil.Check(err)
+	require.NoError(t, err)
 	defer input.Close()
-	c1 := intcode.ReadIntCode(input)
+	c1, err := intcode.ReadIntCode(input)
+	require.NoError(t, err)
 	c2 := make([]int, len(c1))
 	copy(c2, c1)
 	c1[1], c1[2] = 12, 2

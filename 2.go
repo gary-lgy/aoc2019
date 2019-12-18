@@ -2,30 +2,37 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"io"
 
 	"github.com/gary-lgy/aoc2019/intcode"
 )
 
 func init() {
-	solverMap["2a"] = solve2a
-	solverMap["2b"] = solve2b
+	solvers["2a"] = solve2a
+	solvers["2b"] = solve2b
 }
 
-func solve2a(input *os.File) {
+func solve2a(input io.Reader) (string, error) {
 	ic, oc := make(chan int), make(chan int)
-	vm := intcode.NewVM(intcode.ReadIntCode(input), ic, oc)
+	program, err := intcode.ReadIntCode(input)
+	if err != nil {
+		return "", err
+	}
+	vm := intcode.NewVM(program, ic, oc)
 	vm.SetMemory(1, 12)
 	vm.SetMemory(2, 2)
 	go vm.Run()
 	for o := range oc {
 		intcode.LogOutput(o)
 	}
-	fmt.Println(vm.ExitCode())
+	return fmt.Sprint(vm.ExitCode()), nil
 }
 
-func solve2b(input *os.File) {
-	program := intcode.ReadIntCode(input)
+func solve2b(input io.Reader) (string, error) {
+	program, err := intcode.ReadIntCode(input)
+	if err != nil {
+		return "", err
+	}
 	target := 19690720
 
 	for i := 0; i <= 99; i++ {
@@ -39,11 +46,10 @@ func solve2b(input *os.File) {
 				intcode.LogOutput(o)
 			}
 			if vm.ExitCode() == target {
-				fmt.Println(100*i + j)
-				return
+				return fmt.Sprint(100*i + j), nil
 			}
 		}
 	}
 
-	panic("Cannot find answer")
+	return "", fmt.Errorf("cannot find answer")
 }

@@ -3,7 +3,8 @@ package testutil
 import (
 	"testing"
 
-	"github.com/gary-lgy/aoc2019/aocutil"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/gary-lgy/aoc2019/intcode"
 )
 
@@ -16,15 +17,14 @@ func IntcodeVMTest(t *testing.T, tc []VMTC) {
 		for _, i := range c.Input {
 			ic <- i
 		}
-		var actualOutput []int
+		actualOutput := make([]int, 0)
 		for o := range oc {
 			actualOutput = append(actualOutput, o)
 		}
-		if vm.ExitCode() != c.ExpectedReturnValue {
-			t.Errorf("Running %v with input %v, expected %d, got %d", c.Program, c.Input, c.ExpectedReturnValue, vm.ExitCode())
-		}
-		if !aocutil.IntSliceEqual(c.ExpectedOutput, actualOutput) {
-			t.Errorf("Running %v with input %v, expected output %v, got %v", c.Program, c.Input, c.ExpectedOutput, actualOutput)
-		}
+		exitCode := vm.ExitCode()
+		assert.Equalf(t, c.ExpectedReturnValue, exitCode,
+			"Running %v with input %v, expected %d, got %d", c.Program, c.Input, c.ExpectedReturnValue, exitCode)
+		assert.Equalf(t, c.ExpectedOutput, actualOutput,
+			"Running %v with input %v, expected output %v, got %v", c.Program, c.Input, c.ExpectedOutput, actualOutput)
 	}
 }

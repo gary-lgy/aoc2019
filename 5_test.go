@@ -5,15 +5,21 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/gary-lgy/aoc2019/aocutil"
+	"github.com/stretchr/testify/require"
+
 	"github.com/gary-lgy/aoc2019/intcode"
 	. "github.com/gary-lgy/aoc2019/testutil"
 )
 
-func TestVm5a(t *testing.T) {
+func TestDay5(t *testing.T) {
 	input, err := os.Open(filepath.Join("input", "5"))
-	aocutil.Check(err)
+	require.NoError(t, err)
 	defer input.Close()
-	tc := VMTC{Program: intcode.ReadIntCode(input), Input: []int{1}, ExpectedReturnValue: 3, ExpectedOutput: []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 4601506}}
-	IntcodeVMTest(t, []VMTC{tc})
+	program, err := intcode.ReadIntCode(input)
+	require.NoError(t, err)
+	tc := []VMTC{
+		{Program: program, Input: []int{1}, ExpectedReturnValue: 3, ExpectedOutput: []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 4601506}},
+		{Program: program, Input: []int{5}, ExpectedReturnValue: 314, ExpectedOutput: []int{5525561}},
+	}
+	IntcodeVMTest(t, tc)
 }

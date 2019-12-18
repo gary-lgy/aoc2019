@@ -3,15 +3,16 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 )
 
 const usage = "Usage: aoc2019 PUZZLE [INPUT]"
 
-type aocSolver func(*os.File)
+type aocSolver func(io.Reader) (string, error)
 
-var solverMap = make(map[string]aocSolver)
+var solvers = make(map[string]aocSolver)
 
 func main() {
 	if len(os.Args) < 2 {
@@ -20,7 +21,7 @@ func main() {
 	}
 
 	puzzle := os.Args[1]
-	solver, found := solverMap[puzzle]
+	solver, found := solvers[puzzle]
 	if !found {
 		fmt.Fprintln(os.Stderr, errors.New("not implemented yet"))
 		os.Exit(2)
@@ -40,5 +41,10 @@ func main() {
 	}
 	defer file.Close()
 
-	solver(file)
+	answer, err := solver(file)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to solve %s: %v", puzzle, err)
+		os.Exit(4)
+	}
+	fmt.Println("Answer:", answer)
 }

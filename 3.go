@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"math"
-	"os"
 	"strconv"
 	"strings"
 
@@ -12,8 +12,8 @@ import (
 )
 
 func init() {
-	solverMap["3a"] = solve3a
-	solverMap["3b"] = solve3b
+	solvers["3a"] = solve3a
+	solvers["3b"] = solve3b
 }
 
 type point aocutil.IntPair
@@ -40,7 +40,7 @@ func newSegment(start, end point) segment {
 	return s
 }
 
-func getSegments(wire string) []segment {
+func getSegments(wire string) ([]segment, error) {
 	var segments []segment
 	descriptors := strings.Split(wire, ",")
 	start := point{X: 0, Y: 0}
@@ -48,7 +48,9 @@ func getSegments(wire string) []segment {
 	for _, desc := range descriptors {
 		direction := desc[0]
 		steps, err := strconv.ParseInt(desc[1:], 10, 32)
-		aocutil.Check(err)
+		if err != nil {
+			return nil, err
+		}
 		switch direction {
 		case 'U':
 			end = point{X: start.X, Y: start.Y + int(steps)}
@@ -59,17 +61,25 @@ func getSegments(wire string) []segment {
 		case 'R':
 			end = point{X: start.X + int(steps), Y: start.Y}
 		default:
-			panic("Unknown direction " + string(direction))
+			return nil, fmt.Errorf("unknown direction %d", direction)
 		}
 		segments = append(segments, newSegment(start, end))
 		start = end
 	}
-	return segments
+	return segments, nil
 }
 
-func parseWires(input string) ([]segment, []segment) {
+func parseWires(input string) ([]segment, []segment, error) {
 	wires := strings.Split(strings.TrimSpace(input), "\n")
-	return getSegments(wires[0]), getSegments(wires[1])
+	segment0, err := getSegments(wires[0])
+	if err != nil {
+		return nil, nil, err
+	}
+	segment1, err := getSegments(wires[1])
+	if err != nil {
+		return nil, nil, err
+	}
+	return segment0, segment1, nil
 }
 
 func intersection(s1, s2 segment) (intersection point, exists bool) {
@@ -100,11 +110,16 @@ func shortestManhattanDistance(w1, w2 []segment) int {
 	return min
 }
 
-func solve3a(input *os.File) {
+func solve3a(input io.Reader) (string, error) {
 	buf, err := ioutil.ReadAll(input)
-	aocutil.Check(err)
-	w1, w2 := parseWires(string(buf))
-	fmt.Println(shortestManhattanDistance(w1, w2))
+	if err != nil {
+		return "", err
+	}
+	w1, w2, err := parseWires(string(buf))
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprint(shortestManhattanDistance(w1, w2)), nil
 }
 
 func shortestDelay(w1, w2 []segment) int {
@@ -123,9 +138,14 @@ func shortestDelay(w1, w2 []segment) int {
 	return min
 }
 
-func solve3b(input *os.File) {
+func solve3b(input io.Reader) (string, error) {
 	buf, err := ioutil.ReadAll(input)
-	aocutil.Check(err)
-	w1, w2 := parseWires(string(buf))
-	fmt.Println(shortestDelay(w1, w2))
+	if err != nil {
+		return "", err
+	}
+	w1, w2, err := parseWires(string(buf))
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprint(shortestDelay(w1, w2)), nil
 }

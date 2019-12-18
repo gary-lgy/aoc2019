@@ -2,29 +2,32 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
-	"os"
 	"strconv"
 	"strings"
-
-	"github.com/gary-lgy/aoc2019/aocutil"
 )
 
 func init() {
-	solverMap["4a"] = solve4a
-	solverMap["4b"] = solve4b
+	solvers["4a"] = solve4a
+	solvers["4b"] = solve4b
 }
 
-func readRange(input *os.File) (low, high int) {
+func readRange(input io.Reader) (int, int, error) {
 	buf, err := ioutil.ReadAll(input)
-	aocutil.Check(err)
+	if err != nil {
+		return 0, 0, err
+	}
 	data := strings.Split(strings.TrimSpace(string(buf)), "-")
 	l, e1 := strconv.ParseInt(data[0], 10, 32)
-	aocutil.Check(e1)
+	if e1 != nil {
+		return 0, 0, e1
+	}
 	h, e2 := strconv.ParseInt(data[1], 10, 32)
-	aocutil.Check(e2)
-	low, high = int(l), int(h)
-	return
+	if e2 != nil {
+		return 0, 0, e2
+	}
+	return int(l), int(h), nil
 }
 
 func isPossiblePartA(password int) bool {
@@ -40,15 +43,18 @@ func isPossiblePartA(password int) bool {
 	return haveDouble
 }
 
-func solve4aTheStupidWay(input *os.File) {
-	low, high := readRange(input)
+func solve4aTheStupidWay(input io.Reader) (int, error) {
+	low, high, err := readRange(input)
+	if err != nil {
+		return 0, err
+	}
 	ways := 0
 	for i := low; i <= high; i++ {
 		if isPossiblePartA(i) {
 			ways++
 		}
 	}
-	fmt.Println(ways)
+	return ways, nil
 }
 
 func isPossiblePartB(password int) bool {
@@ -70,21 +76,32 @@ func isPossiblePartB(password int) bool {
 	return haveDouble || repeated == 2
 }
 
-func solve4bTheStupidWay(input *os.File) {
-	low, high := readRange(input)
+func solve4bTheStupidWay(input io.Reader) (int, error) {
+	low, high, err := readRange(input)
+	if err != nil {
+		return 0, err
+	}
 	ways := 0
 	for i := low; i <= high; i++ {
 		if isPossiblePartB(i) {
 			ways++
 		}
 	}
-	fmt.Println(ways)
+	return ways, nil
 }
 
-func solve4a(input *os.File) {
-	solve4aTheStupidWay(input)
+func solve4a(input io.Reader) (string, error) {
+	answer, err := solve4aTheStupidWay(input)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprint(answer), nil
 }
 
-func solve4b(input *os.File) {
-	solve4bTheStupidWay(input)
+func solve4b(input io.Reader) (string, error) {
+	answer, err := solve4bTheStupidWay(input)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprint(answer), nil
 }

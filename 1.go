@@ -3,31 +3,31 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"os"
+	"io"
 	"strconv"
-
-	"github.com/gary-lgy/aoc2019/aocutil"
 )
 
 func init() {
-	solverMap["1a"] = solve1a
-	solverMap["1b"] = solve1b
+	solvers["1a"] = solve1a
+	solvers["1b"] = solve1b
 }
 
 func fuelPartA(mass int) int {
 	return mass/3 - 2
 }
 
-func solve1a(input *os.File) {
+func solve1a(input io.Reader) (string, error) {
 	scanner := bufio.NewScanner(input)
 
 	var sum = 0
 	for scanner.Scan() {
 		mass, err := strconv.ParseInt(scanner.Text(), 10, 32)
-		aocutil.Check(err)
+		if err != nil {
+			return "", err
+		}
 		sum += fuelPartA(int(mass))
 	}
-	fmt.Println(sum)
+	return fmt.Sprint(sum), nil
 }
 
 func fuelPartB(mass int) int {
@@ -40,14 +40,16 @@ func fuelPartB(mass int) int {
 	return fuel
 }
 
-func solve1b(input *os.File) {
+func solve1b(input io.Reader) (string, error) {
 	scanner := bufio.NewScanner(input)
 
 	var sum int
 	for scanner.Scan() {
 		mass, err := strconv.ParseInt(scanner.Text(), 10, 32)
-		aocutil.Check(err)
+		if err != nil {
+			return "", err
+		}
 		sum += fuelPartB(int(mass))
 	}
-	fmt.Println(sum)
+	return fmt.Sprint(sum), nil
 }

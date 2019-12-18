@@ -4,15 +4,14 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 )
 
 type adjList map[string][]string
 
 func init() {
-	solverMap["6a"] = solve6a
-	solverMap["6b"] = solve6b
+	solvers["6a"] = solve6a
+	solvers["6b"] = solve6b
 }
 
 func readOrbits(input io.Reader) (orbits adjList) {
@@ -36,10 +35,10 @@ func countOrbits(start string, orbits *adjList) (size, orbitCount int) {
 	return
 }
 
-func solve6a(input *os.File) {
+func solve6a(input io.Reader) (string, error) {
 	orbits := readOrbits(input)
 	_, orbitCount := countOrbits("COM", &orbits)
-	fmt.Println(orbitCount)
+	return fmt.Sprint(orbitCount), nil
 }
 
 func getParents(input io.Reader) (parents map[string]string) {
@@ -79,7 +78,7 @@ func calcDist(parents *map[string]string) int {
 	return dist
 }
 
-func solve6b(input *os.File) {
+func solve6b(input io.Reader) (string, error) {
 	parents := getParents(input)
-	fmt.Println(calcDist(&parents))
+	return fmt.Sprint(calcDist(&parents)), nil
 }

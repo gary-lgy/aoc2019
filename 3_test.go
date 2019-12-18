@@ -6,7 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/gary-lgy/aoc2019/aocutil"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type wireTc struct {
@@ -22,17 +23,16 @@ func Test3a(t *testing.T) {
 U98,R91,D20,R16,D67,R40,U7,R15,U6,R7`, 135},
 	}
 	input, err := os.Open(filepath.Join("input", "3"))
-	aocutil.Check(err)
+	require.NoError(t, err)
 	defer input.Close()
 	data, err := ioutil.ReadAll(input)
-	aocutil.Check(err)
+	require.NoError(t, err)
 	tc = append(tc, wireTc{string(data), 1084})
 
 	for _, c := range tc {
-		actual := shortestManhattanDistance(parseWires(c.Input))
-		if actual != c.Expected {
-			t.Errorf("shortestManhattanDistance(%q) = %d, expected %d", c.Input, actual, c.Expected)
-		}
+		wire0, wire1, err := parseWires(c.Input)
+		require.NoError(t, err)
+		assert.Equal(t, c.Expected, shortestManhattanDistance(wire0, wire1))
 	}
 }
 
@@ -44,16 +44,15 @@ func Test3b(t *testing.T) {
 U98,R91,D20,R16,D67,R40,U7,R15,U6,R7`, 410},
 	}
 	input, err := os.Open(filepath.Join("input", "3"))
-	aocutil.Check(err)
+	require.NoError(t, err)
 	defer input.Close()
 	data, err := ioutil.ReadAll(input)
-	aocutil.Check(err)
+	require.NoError(t, err)
 	tc = append(tc, wireTc{string(data), 9240})
 
 	for _, c := range tc {
-		actual := shortestDelay(parseWires(c.Input))
-		if actual != c.Expected {
-			t.Errorf("shortestDelay(%q) = %d, expected %d", c.Input, actual, c.Expected)
-		}
+		wire0, wire1, err := parseWires(c.Input)
+		require.NoError(t, err)
+		assert.Equal(t, c.Expected, shortestDelay(wire0, wire1))
 	}
 }

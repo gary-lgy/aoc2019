@@ -7,14 +7,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gary-lgy/aoc2019/aocutil"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func test6a(t *testing.T, orbits *adjList, expected int) {
 	_, actual := countOrbits("COM", orbits)
-	if actual != expected {
-		t.Errorf("Expected %d orbits, got %d", expected, actual)
-	}
+	assert.Equal(t, expected, actual)
 }
 
 func Test6a(t *testing.T) {
@@ -23,7 +22,7 @@ func Test6a(t *testing.T) {
 	test6a(t, &orbits, 42)
 
 	input, err := os.Open(filepath.Join("input", "6"))
-	aocutil.Check(err)
+	require.NoError(t, err)
 	defer input.Close()
 	orbits = readOrbits(input)
 	test6a(t, &orbits, 147807)
@@ -31,10 +30,7 @@ func Test6a(t *testing.T) {
 
 func test6b(t *testing.T, input io.Reader, expected int) {
 	parents := getParents(input)
-	actual := calcDist(&parents)
-	if actual != expected {
-		t.Errorf("Expected %d steps, got %d", expected, actual)
-	}
+	assert.Equal(t, expected, calcDist(&parents))
 }
 
 func Test6b(t *testing.T) {
@@ -43,7 +39,7 @@ func Test6b(t *testing.T) {
 	test6b(t, strings.NewReader(example), 4)
 
 	input, err := os.Open(filepath.Join("input", "6"))
-	aocutil.Check(err)
+	require.NoError(t, err)
 	defer input.Close()
 	test6b(t, input, 229)
 }
