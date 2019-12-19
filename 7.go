@@ -61,7 +61,7 @@ func chainedAmplifiersOutput(program []int64, phases []int) int64 {
 		ic, oc := channels[i], channels[(i+1)%l]
 		vm := intcode.NewVM(program, ic, oc)
 		wg.Add(1)
-		go vm.RunWithWG(&wg)
+		go intcode.RunWithWG(vm, &wg)
 		ic <- int64(phases[i])
 	}
 	channels[0] <- 0

@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 const usage = "Usage: aoc2019 PUZZLE [INPUT]"
@@ -29,7 +30,7 @@ func main() {
 
 	var input string
 	if len(os.Args) == 2 {
-		input = puzzle[:1] + ".txt"
+		input = strings.TrimRight(puzzle, "ab") + ".txt"
 	} else {
 		input = os.Args[2]
 	}

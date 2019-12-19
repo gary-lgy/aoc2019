@@ -1,6 +1,31 @@
 package intcode
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+	"io/ioutil"
+	"strconv"
+	"strings"
+	"sync"
+)
+
+// ReadIntCode takes in an io.Reader and returns its content as an intcode memory
+func ReadIntCode(input io.Reader) ([]int64, error) {
+	buf, err := ioutil.ReadAll(input)
+	if err != nil {
+		return nil, err
+	}
+	tokens := strings.Split(strings.TrimSpace(string(buf)), ",")
+	intcode := make([]int64, len(tokens))
+	for i, token := range tokens {
+		number, err := strconv.ParseInt(token, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		intcode[i] = number
+	}
+	return intcode, nil
+}
 
 // LogOutput logs output from intcode vm
 func LogOutput(output int64) {
@@ -23,3 +48,10 @@ func RunSingleInstance(program, input []int64, outputHandlers ...func(int64)) (o
 	}
 	return output, vm.ExitCode()
 }
+
+// RunWithWG runs vm and decrement wg count after it is done
+func  RunWithWG(vm *VM, wg *sync.WaitGroup) {
+	vm.Run()
+	wg.Done()
+}
+
