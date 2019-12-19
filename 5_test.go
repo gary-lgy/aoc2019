@@ -12,7 +12,7 @@ import (
 )
 
 func TestDay5(t *testing.T) {
-	input, err := os.Open(filepath.Join("input", "5"))
+	input, err := os.Open(filepath.Join("input", "5.txt"))
 	require.NoError(t, err)
 	defer input.Close()
 	program, err := intcode.ReadIntCode(input)

@@ -29,7 +29,7 @@ func main() {
 
 	var input string
 	if len(os.Args) == 2 {
-		input = puzzle[:1]
+		input = puzzle[:1] + ".txt"
 	} else {
 		input = os.Args[2]
 	}

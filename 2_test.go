@@ -19,7 +19,7 @@ func TestVmReturnValue(t *testing.T) {
 		{[]int{2, 4, 4, 5, 99, 0}, []int{}, 2, []int{}},
 		{[]int{1, 1, 1, 4, 99, 5, 6, 0, 99}, []int{}, 30, []int{}},
 	}
-	input, err := os.Open(filepath.Join("input", "2"))
+	input, err := os.Open(filepath.Join("input", "2.txt"))
 	require.NoError(t, err)
 	defer input.Close()
 	c1, err := intcode.ReadIntCode(input)
