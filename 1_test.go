@@ -3,13 +3,15 @@ package main
 import (
 	"testing"
 
-	. "github.com/gary-lgy/aoc2019/testutil"
-
 	"github.com/stretchr/testify/assert"
 )
 
+type intTC struct {
+	Input, Expected int
+}
+
 func TestFuelPartA(t *testing.T) {
-	testCases := []IntTC{
+	testCases := []intTC{
 		{12, 2},
 		{14, 2},
 		{1969, 654},
@@ -21,7 +23,7 @@ func TestFuelPartA(t *testing.T) {
 }
 
 func TestFuelPartB(t *testing.T) {
-	testCases := []IntTC{
+	testCases := []intTC{
 		{14, 2},
 		{1969, 966},
 		{100756, 50346},

@@ -13,19 +13,13 @@ func init() {
 }
 
 func solve2a(input io.Reader) (string, error) {
-	ic, oc := make(chan int), make(chan int)
 	program, err := intcode.ReadIntCode(input)
 	if err != nil {
 		return "", err
 	}
-	vm := intcode.NewVM(program, ic, oc)
-	vm.SetMemory(1, 12)
-	vm.SetMemory(2, 2)
-	go vm.Run()
-	for o := range oc {
-		intcode.LogOutput(o)
-	}
-	return fmt.Sprint(vm.ExitCode()), nil
+	program[1], program[2] = 12, 2
+	_, exitCode := intcode.RunSingleInstance(program, nil, intcode.LogOutput)
+	return fmt.Sprint(exitCode), nil
 }
 
 func solve2b(input io.Reader) (string, error) {
@@ -33,19 +27,12 @@ func solve2b(input io.Reader) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	target := 19690720
-
+	var target int64 = 19690720
 	for i := 0; i <= 99; i++ {
 		for j := 0; j <= 99; j++ {
-			ic, oc := make(chan int), make(chan int)
-			vm := intcode.NewVM(program, ic, oc)
-			vm.SetMemory(1, i)
-			vm.SetMemory(2, j)
-			go vm.Run()
-			for o := range oc {
-				intcode.LogOutput(o)
-			}
-			if vm.ExitCode() == target {
+			program[1], program[2] = int64(i), int64(j)
+			_, exitCode := intcode.RunSingleInstance(program, nil, intcode.LogOutput)
+			if exitCode == target {
 				return fmt.Sprint(100*i + j), nil
 			}
 		}

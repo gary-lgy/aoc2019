@@ -1,13 +1,13 @@
 package main
 
 import (
-	"io/ioutil"
-	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/gary-lgy/aoc2019/testutil"
 )
 
 type wireTc struct {
@@ -22,12 +22,8 @@ func Test3a(t *testing.T) {
 		{`R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51
 U98,R91,D20,R16,D67,R40,U7,R15,U6,R7`, 135},
 	}
-	input, err := os.Open(filepath.Join("input", "3.txt"))
-	require.NoError(t, err)
-	defer input.Close()
-	data, err := ioutil.ReadAll(input)
-	require.NoError(t, err)
-	tc = append(tc, wireTc{string(data), 1084})
+	input := testutil.ReadStringFromFile(t, filepath.Join("input", "3.txt"))
+	tc = append(tc, wireTc{input, 1084})
 
 	for _, c := range tc {
 		wire0, wire1, err := parseWires(c.Input)
@@ -43,12 +39,8 @@ func Test3b(t *testing.T) {
 		{`R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51
 U98,R91,D20,R16,D67,R40,U7,R15,U6,R7`, 410},
 	}
-	input, err := os.Open(filepath.Join("input", "3.txt"))
-	require.NoError(t, err)
-	defer input.Close()
-	data, err := ioutil.ReadAll(input)
-	require.NoError(t, err)
-	tc = append(tc, wireTc{string(data), 9240})
+	input := testutil.ReadStringFromFile(t, filepath.Join("input", "3.txt"))
+	tc = append(tc, wireTc{input, 9240})
 
 	for _, c := range tc {
 		wire0, wire1, err := parseWires(c.Input)

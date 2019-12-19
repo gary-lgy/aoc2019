@@ -37,24 +37,24 @@ func permutations(numbers []int) [][]int {
 	return permutationsHelper(numbers, []int{}, [][]int{}, []bool{true, true, true, true, true})
 }
 
-func amplifiersOutput(program []int, phases []int) int {
-	output := 0
+func amplifiersOutput(program []int64, phases []int) int64 {
+	var output int64 = 0
 	for i := 0; i < len(phases); i++ {
-		ic, oc := make(chan int), make(chan int)
+		ic, oc := make(chan int64), make(chan int64)
 		vm := intcode.NewVM(program, ic, oc)
 		go vm.Run()
-		ic <- phases[i]
+		ic <- int64(phases[i])
 		ic <- output
 		output = <-oc
 	}
 	return output
 }
 
-func chainedAmplifiersOutput(program []int, phases []int) int {
+func chainedAmplifiersOutput(program []int64, phases []int) int64 {
 	l := len(phases)
-	channels := make([]chan int, 0, l)
+	channels := make([]chan int64, 0, l)
 	for i := 0; i < l; i++ {
-		channels = append(channels, make(chan int, 10))
+		channels = append(channels, make(chan int64, 10))
 	}
 	var wg sync.WaitGroup
 	for i := 0; i < l; i++ {
@@ -62,20 +62,20 @@ func chainedAmplifiersOutput(program []int, phases []int) int {
 		vm := intcode.NewVM(program, ic, oc)
 		wg.Add(1)
 		go vm.RunWithWG(&wg)
-		ic <- phases[i]
+		ic <- int64(phases[i])
 	}
 	channels[0] <- 0
 	wg.Wait()
 	return <-channels[0]
 }
 
-func maxAmplifiersOutput(input io.Reader, phases []int, outputFunc func([]int, []int) int) (int, error) {
+func maxAmplifiersOutput(input io.Reader, phases []int, outputFunc func([]int64, []int) int64) (int64, error) {
 	program, err := intcode.ReadIntCode(input)
 	if err != nil {
 		return 0, err
 	}
 	permutations := permutations(phases)
-	max := math.MinInt32
+	var max int64 = math.MinInt64
 	for _, perm := range permutations {
 		if output := outputFunc(program, perm); output > max {
 			max = output

@@ -7,11 +7,11 @@ import (
 )
 
 func init() {
-	solvers["5a"] = solve5a
-	solvers["5b"] = solve5b
+	solvers["9a"] = solve9a
+	solvers["9b"] = solve9b
 }
 
-func solve5a(input io.Reader) (string, error) {
+func solve9a(input io.Reader) (string, error) {
 	program, err := intcode.ReadIntCode(input)
 	if err != nil {
 		return "", err
@@ -20,11 +20,12 @@ func solve5a(input io.Reader) (string, error) {
 	return "", nil
 }
 
-func solve5b(input io.Reader) (string, error) {
+func solve9b(input io.Reader) (string, error) {
 	program, err := intcode.ReadIntCode(input)
 	if err != nil {
 		return "", err
 	}
-	intcode.RunSingleInstance(program, []int64{5}, intcode.LogOutput)
+	intcode.RunSingleInstance(program, []int64{2}, intcode.LogOutput)
 	return "", nil
 }
+
