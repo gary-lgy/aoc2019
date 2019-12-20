@@ -9,6 +9,11 @@ type IntPair struct {
 	X, Y int
 }
 
+// IntTriple is a triple of int
+type IntTriple struct {
+	X, Y, Z int
+}
+
 // AbsInt returns the absolute value of x
 func AbsInt(x int) int {
 	if x < 0 {
@@ -40,9 +45,14 @@ func MinInt(integers ...int) int {
 }
 
 // GreatestCommonDivisor computes the gcd of a and b
-func GreatestCommonDivisor(a, b int) int {
+func GreatestCommonDivisor(a, b int64) int64 {
 	if b == 0 {
 		return a
 	}
 	return GreatestCommonDivisor(b, a%b)
+}
+
+// LeastCommonMultiple computes the lcm of a and b
+func LeastCommonMultiple(a, b int64) int64 {
+	return a * b / GreatestCommonDivisor(a, b)
 }

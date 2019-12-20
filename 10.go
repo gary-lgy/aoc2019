@@ -35,8 +35,8 @@ func reduceFraction(frac aocutil.IntPair) aocutil.IntPair {
 	if frac.Y == 0 {
 		return aocutil.IntPair{X: frac.X / aocutil.AbsInt(frac.X), Y: 0}
 	}
-	gcd := aocutil.GreatestCommonDivisor(aocutil.AbsInt(frac.X), aocutil.AbsInt(frac.Y))
-	return aocutil.IntPair{X: frac.X / gcd, Y: frac.Y / gcd}
+	gcd := aocutil.GreatestCommonDivisor(int64(aocutil.AbsInt(frac.X)), int64(aocutil.AbsInt(frac.Y)))
+	return aocutil.IntPair{X: frac.X / int(gcd), Y: frac.Y / int(gcd)}
 }
 
 func bestMonitoringStation(asteroids []aocutil.IntPair) (aocutil.IntPair, int) {
