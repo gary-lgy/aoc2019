@@ -41,28 +41,27 @@ func moveForward(pos aocutil.IntPair, direction int) (aocutil.IntPair, error) {
 }
 
 func paintHull(program []int64, initialColor int) (map[aocutil.IntPair]int, error) {
-	ic, oc := make(chan int64), make(chan int64)
-	vm := intcode.NewVM(program, ic, oc)
-	go vm.Run()
-
 	// 0: black; 1: white
 	colors := make(map[aocutil.IntPair]int)
 	// 0: up; 1: right, 2: down; 3: left
 	direction := 0
 	origin, pos := aocutil.IntPair{X: 0, Y: 0}, aocutil.IntPair{X: 0, Y: 0}
-	// FIXME: this check is subject to race condition.
-	// If the main coroutine reaches this check before the vm coroutine executes instruction 99, deadlock will occur
+	vm := intcode.NewVM(program)
 	for !vm.Stopped() {
+		var input int64
 		if color, exists := colors[pos]; exists {
-			ic <- int64(color)
+			input =  int64(color)
 		} else if pos == origin {
-			ic <- int64(initialColor)
+			input =  int64(initialColor)
 		} else {
-			ic <- 0
+			input =  0
 		}
-		colorToPaint := <-oc
+		output, err := vm.Run([]int64{input})
+		if err != nil {
+			return nil, err
+		}
+		colorToPaint, turn := output[0], output[1]
 		colors[pos] = int(colorToPaint)
-		turn := <-oc
 		newDirection, err := nextDirection(direction, int(turn))
 		if err != nil {
 			return nil, err

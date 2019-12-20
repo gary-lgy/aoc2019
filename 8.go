@@ -66,11 +66,13 @@ func solve8a(input io.Reader) (string, error) {
 	return fmt.Sprint(ones * twos), nil
 }
 
-func displayImage(image [][]byte) {
+func displayImage(image [][]byte) string {
+	display := "\n"
 	for _, row := range image {
 		r := strings.NewReplacer("0", " ", "1", "■", "2", " ")
-		fmt.Println(r.Replace(string(row)))
+		display += r.Replace(string(row)) + "\n"
 	}
+	return display
 }
 
 func solve8b(input io.Reader) (string, error) {
@@ -95,6 +97,5 @@ func solve8b(input io.Reader) (string, error) {
 			}
 		}
 	}
-	displayImage(image)
-	return "", nil
+	return displayImage(image), nil
 }

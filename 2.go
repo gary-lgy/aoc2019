@@ -18,7 +18,13 @@ func solve2a(input io.Reader) (string, error) {
 		return "", err
 	}
 	program[1], program[2] = 12, 2
-	_, exitCode := intcode.RunSingleInstance(program, nil, intcode.LogOutput)
+	output, exitCode, err := intcode.RunSingleInstance(program, nil)
+	if err != nil {
+		return "", err
+	}
+	for _, out := range output {
+		intcode.LogOutput(out)
+	}
 	return fmt.Sprint(exitCode), nil
 }
 
@@ -31,7 +37,13 @@ func solve2b(input io.Reader) (string, error) {
 	for i := 0; i <= 99; i++ {
 		for j := 0; j <= 99; j++ {
 			program[1], program[2] = int64(i), int64(j)
-			_, exitCode := intcode.RunSingleInstance(program, nil, intcode.LogOutput)
+			output, exitCode, err := intcode.RunSingleInstance(program, nil)
+			if err != nil {
+				return "", err
+			}
+			for _, out := range output {
+				intcode.LogOutput(out)
+			}
 			if exitCode == target {
 				return fmt.Sprint(100*i + j), nil
 			}

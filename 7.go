@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"math"
-	"sync"
 
 	"github.com/gary-lgy/aoc2019/intcode"
 )
@@ -37,39 +36,47 @@ func permutations(numbers []int) [][]int {
 	return permutationsHelper(numbers, []int{}, [][]int{}, []bool{true, true, true, true, true})
 }
 
-func amplifiersOutput(program []int64, phases []int) int64 {
+func amplifiersOutput(program []int64, phases []int) (int64, error) {
 	var output int64 = 0
 	for i := 0; i < len(phases); i++ {
-		ic, oc := make(chan int64), make(chan int64)
-		vm := intcode.NewVM(program, ic, oc)
-		go vm.Run()
-		ic <- int64(phases[i])
-		ic <- output
-		output = <-oc
+		vm := intcode.NewVM(program)
+		outputSlice, err := vm.Run([]int64{int64(phases[i]), output})
+		if err != nil {
+			return 0, err
+		}
+		output = outputSlice[0]
 	}
-	return output
+	return output, nil
 }
 
-func chainedAmplifiersOutput(program []int64, phases []int) int64 {
+func chainedAmplifiersOutput(program []int64, phases []int) (int64, error) {
 	l := len(phases)
-	channels := make([]chan int64, 0, l)
+	vms := make([]*intcode.VM, 0, l)
 	for i := 0; i < l; i++ {
-		channels = append(channels, make(chan int64, 10))
+		vm := intcode.NewVM(program)
+		_, err := vm.Run([]int64{int64(phases[i])})
+		if err != nil {
+			return 0, err
+		}
+		vms = append(vms, vm)
 	}
-	var wg sync.WaitGroup
-	for i := 0; i < l; i++ {
-		ic, oc := channels[i], channels[(i+1)%l]
-		vm := intcode.NewVM(program, ic, oc)
-		wg.Add(1)
-		go intcode.RunWithWG(vm, &wg)
-		ic <- int64(phases[i])
+	var output int64 = 0
+	for {
+		for i := 0; i < l; i++ {
+			outputSlice, err := vms[i].Run([]int64{output})
+			if err != nil {
+				return 0, err
+			}
+			output = outputSlice[0]
+		}
+		if vms[l-1].Stopped() {
+			break
+		}
 	}
-	channels[0] <- 0
-	wg.Wait()
-	return <-channels[0]
+	return output, nil
 }
 
-func maxAmplifiersOutput(input io.Reader, phases []int, outputFunc func([]int64, []int) int64) (int64, error) {
+func maxAmplifiersOutput(input io.Reader, phases []int, outputFunc func([]int64, []int) (int64, error)) (int64, error) {
 	program, err := intcode.ReadIntCode(input)
 	if err != nil {
 		return 0, err
@@ -77,7 +84,11 @@ func maxAmplifiersOutput(input io.Reader, phases []int, outputFunc func([]int64,
 	permutations := permutations(phases)
 	var max int64 = math.MinInt64
 	for _, perm := range permutations {
-		if output := outputFunc(program, perm); output > max {
+		output, err := outputFunc(program, perm)
+		if err != nil {
+			return 0, err
+		}
+		if output > max {
 			max = output
 		}
 	}

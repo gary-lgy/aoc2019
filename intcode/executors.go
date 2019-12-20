@@ -22,7 +22,11 @@ func (vm *VM) executeInput(inst *instruction) error {
 	if err != nil {
 		return err
 	}
-	vm.setMemory(dest, vm.getInput())
+	input, err := vm.getInput()
+	if err != nil {
+		return err
+	}
+	vm.setMemory(dest, input)
 	return nil
 }
 

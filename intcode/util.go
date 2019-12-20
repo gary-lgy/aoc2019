@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"strconv"
 	"strings"
-	"sync"
 )
 
 // ReadIntCode takes in an io.Reader and returns its content as an intcode memory
@@ -32,26 +31,13 @@ func LogOutput(output int64) {
 	fmt.Println("Output from VM:", output)
 }
 
-// RunSingleInstance constructs and runs a single VM with program and input, and return its output and exit code
-func RunSingleInstance(program, input []int64, outputHandlers ...func(int64)) (output []int64, exitCode int64) {
-	ic, oc := make(chan int64), make(chan int64)
-	vm := NewVM(program, ic, oc)
-	go vm.Run()
-	for _, in := range input {
-		ic <- in
+// RunSingleInstance constructs and runs a single VM with program and input, and returns its output, exit code, and error encountered, if any
+func RunSingleInstance(program, input []int64) ([]int64, int64, error) {
+	vm := NewVM(program)
+	output, err := vm.Run(input)
+	if err != nil {
+		return nil, 0, err
 	}
-	for out := range oc {
-		output = append(output, out)
-		for _, fn := range outputHandlers {
-			fn(out)
-		}
-	}
-	return output, vm.ExitCode()
-}
-
-// RunWithWG runs vm and decrement wg count after it is done
-func  RunWithWG(vm *VM, wg *sync.WaitGroup) {
-	vm.Run()
-	wg.Done()
+	return output, vm.ExitCode(), nil
 }
 

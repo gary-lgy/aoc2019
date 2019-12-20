@@ -16,7 +16,7 @@ type stringIntTC struct {
 	Expected int64
 }
 
-func testDay7(t *testing.T, tc []stringIntTC, phases []int, outputFunc func([]int64, []int) int64) {
+func testDay7(t *testing.T, tc []stringIntTC, phases []int, outputFunc func([]int64, []int) (int64, error)) {
 	for _, c := range tc {
 		output, err := maxAmplifiersOutput(strings.NewReader(c.Input), phases, outputFunc)
 		require.NoError(t, err)

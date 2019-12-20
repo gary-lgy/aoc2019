@@ -16,7 +16,13 @@ func solve5a(input io.Reader) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	intcode.RunSingleInstance(program, []int64{1}, intcode.LogOutput)
+	output, _, err := intcode.RunSingleInstance(program, []int64{1})
+	if err != nil {
+		return "", err
+	}
+	for _, out := range output {
+		intcode.LogOutput(out)
+	}
 	return "", nil
 }
 
@@ -25,6 +31,12 @@ func solve5b(input io.Reader) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	intcode.RunSingleInstance(program, []int64{5}, intcode.LogOutput)
+	output, _, err := intcode.RunSingleInstance(program, []int64{5})
+	if err != nil {
+		return "", err
+	}
+	for _, out := range output {
+		intcode.LogOutput(out)
+	}
 	return "", nil
 }

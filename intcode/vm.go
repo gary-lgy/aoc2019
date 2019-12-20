@@ -4,35 +4,37 @@ import (
 	"fmt"
 )
 
-// TODO: Refactor to not use go routines?
-
 // VM represents an intcode machine
 // New VM instances should be constructed with the NewVM method instead of direct initialization of the VM struct
 type VM struct {
 	pc           int64
 	relativeBase int64
 	memory       map[int64]int64
-	input        <-chan int64
-	output       chan<- int64
-	exitCode     int64
 	done         bool
+	input        []int64
+	output       []int64
 }
 
 // NewVM constructs a new Intcode VM
-func NewVM(intcodes []int64, input <-chan int64, output chan<- int64) *VM {
+func NewVM(intcodes []int64) *VM {
 	memory := make(map[int64]int64, len(intcodes))
 	for i, c := range intcodes {
 		memory[int64(i)] = c
 	}
-	return &VM{memory: memory, input: input, output: output, pc: 0, relativeBase: 0, exitCode: 0, done: false}
+	return &VM{pc: 0, relativeBase: 0, memory: memory, done: false}
 }
 
-func (vm *VM) getInput() int64 {
-	return <-vm.input
+func (vm *VM) getInput() (int64, error) {
+	if len(vm.input) == 0 {
+		return 0, fmt.Errorf("not enough input")
+	}
+	in := vm.input[0]
+	vm.input = vm.input[1:]
+	return in, nil
 }
 
 func (vm *VM) pushOutput(output int64) {
-	vm.output <- output
+	vm.output = append(vm.output, output)
 }
 
 func (vm *VM) readMemory(index int64) int64 {
@@ -81,18 +83,23 @@ func (vm *VM) execute(inst *instruction) error {
 		return vm.executeChangeRelativeBase(inst)
 	case 99:
 		vm.done = true
-		vm.exitCode = vm.memory[0]
-		close(vm.output)
 		return nil
 	default:
 		return fmt.Errorf("unknown opcode %d", inst.opcode)
 	}
 }
 
-// Run vm
-func (vm *VM) Run() {
-	for {
+// Run vm with inputs until more inputs are needed or the program halts
+func (vm *VM) Run(input []int64) ([]int64, error) {
+	vm.input = make([]int64, len(input))
+	copy(vm.input, input)
+	vm.output = nil
+
+	for !vm.done {
 		opcode, modes := readOpcode(vm.memory[vm.pc])
+		if opcode == 3 && len(vm.input) == 0 {
+			break // no more input
+		}
 		vm.pc++
 		var parameters []parameter
 		for _, mode := range modes {
@@ -102,17 +109,15 @@ func (vm *VM) Run() {
 		inst := instruction{opcode, parameters}
 		err := vm.execute(&inst)
 		if err != nil {
-			panic(fmt.Errorf("intcode VM internal error: %v", err))
-		}
-		if vm.done {
-			break
+			return nil, fmt.Errorf("intcode VM internal error: %v", err)
 		}
 	}
+	return vm.output, nil
 }
 
 // ExitCode returns the exit code of the VM
 func (vm *VM) ExitCode() int64 {
-	return vm.exitCode
+	return vm.memory[0]
 }
 
 // Stopped checks if vm has stopped running
