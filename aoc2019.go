@@ -30,21 +30,21 @@ func main() {
 
 	var input string
 	if len(os.Args) == 2 {
-		input = strings.TrimRight(puzzle, "ab") + ".txt"
+		// If no filename is provided, infer it from puzzle name
+		input = filepath.Join("input", strings.TrimRight(puzzle, "ab") + ".txt")
 	} else {
 		input = os.Args[2]
 	}
-	filename := filepath.Join("input", input)
-	file, err := os.Open(filename)
+	file, err := os.Open(input)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error opening input file %q: %v\n", filename, err)
+		fmt.Fprintf(os.Stderr, "Error opening input file %q: %v\n", input, err)
 		os.Exit(3)
 	}
 	defer file.Close()
 
 	answer, err := solver(file)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to solve %s: %v", puzzle, err)
+		fmt.Fprintf(os.Stderr, "Failed to solve %s: %v\n", puzzle, err)
 		os.Exit(4)
 	}
 	fmt.Println("Answer:", answer)
