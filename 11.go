@@ -50,11 +50,11 @@ func paintHull(program []int64, initialColor int) (map[aocutil.IntPair]int, erro
 	for !vm.Stopped() {
 		var input int64
 		if color, exists := colors[pos]; exists {
-			input =  int64(color)
+			input = int64(color)
 		} else if pos == origin {
-			input =  int64(initialColor)
+			input = int64(initialColor)
 		} else {
-			input =  0
+			input = 0
 		}
 		output, err := vm.Run([]int64{input})
 		if err != nil {

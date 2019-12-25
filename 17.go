@@ -87,5 +87,5 @@ func solve17b(input io.Reader) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprint(output[len(output) - 1]), nil
+	return fmt.Sprint(output[len(output)-1]), nil
 }

@@ -40,4 +40,3 @@ func solve9b(input io.Reader) (string, error) {
 	}
 	return "", nil
 }
-

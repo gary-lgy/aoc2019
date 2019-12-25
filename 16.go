@@ -86,7 +86,7 @@ func solve16b(input io.Reader) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if int(offset) < len(numbers)*10000 / 2 {
+	if int(offset) < len(numbers)*10000/2 {
 		return "", fmt.Errorf("algorithm failed: message offset is less than half of input length")
 	}
 	numbers = neededNumbers(numbers, int(offset))

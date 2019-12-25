@@ -31,7 +31,7 @@ func main() {
 	var input string
 	if len(os.Args) == 2 {
 		// If no filename is provided, infer it from puzzle name
-		input = filepath.Join("input", strings.TrimRight(puzzle, "ab") + ".txt")
+		input = filepath.Join("input", strings.TrimRight(puzzle, "ab")+".txt")
 	} else {
 		input = os.Args[2]
 	}

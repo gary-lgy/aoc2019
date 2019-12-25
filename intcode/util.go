@@ -40,4 +40,3 @@ func RunSingleInstance(program, input []int64) ([]int64, int64, error) {
 	}
 	return output, vm.ExitCode(), nil
 }
-
